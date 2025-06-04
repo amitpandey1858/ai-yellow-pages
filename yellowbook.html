@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Yellow Book: Global Agent Compendium 2025</title>
+  <style>
+    body { font-family: system-ui,sans-serif; background: #fafafa; color: #222; line-height:1.4;}
+    .header { background: #fff8e1; border-bottom: 3px solid #ffc107; box-shadow: 0 2px 10px #0001; position:sticky;top:0;z-index:10;}
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px;}
+    .header h1 { font-size:2em; margin-bottom:5px;}
+    .header .subtitle { color:#666; margin-bottom:8px;}
+    .header .timestamp { font-size:.9em; color:#888;}
+    .container { max-width: 1200px; margin:0 auto; padding:20px;}
+    .tabs { display:flex; background:#fff; border-radius:8px 8px 0 0; box-shadow:0 2px 8px #0001;}
+    .tab { flex:1; padding:14px; background:#f5f5f5; border:none; font-weight:600; color:#666; cursor:pointer; transition:.2s;}
+    .tab.active { background:#ffc107; color:#222;}
+    .tab:not(.active):hover { background:#ffe082;}
+    .tab-content { display:none; background:#fff; border-radius:0 0 8px 8px; box-shadow:0 2px 8px #0001; padding:20px;}
+    .tab-content.active { display:block;}
+    .controls { margin-bottom:16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+    .search-box { padding:8px 12px; border:2px solid #ddd; border-radius:6px; font-size:1em; min-width:180px;}
+    .search-box:focus { border-color:#ffc107;}
+    .btn { padding:8px 16px; background:#ffc107; color:#222; border:none; border-radius:6px; font-weight:600; cursor:pointer;}
+    .btn:hover { background:#ffb300;}
+    .btn-secondary { background:#666; color:#fff;}
+    .btn-secondary:hover { background:#444;}
+    table { width:100%; border-collapse:collapse; margin:16px 0; background:#fff; border-radius:6px; overflow:hidden; box-shadow:0 1px 3px #0001;}
+    th,td { padding:10px 8px; border-bottom:1px solid #eee; text-align:left;}
+    th { background:#fffde7; font-weight:600; cursor:pointer;}
+    th:hover { background:#fff9c4;}
+    tr:hover { background:#fffde7;}
+    .status-ga { color:#388e3c; font-weight:600;}
+    .status-beta { color:#ffa000; font-weight:600;}
+    .status-opensource { color:#0288d1; font-weight:600;}
+    .status-research { color:#6f42c1; font-weight:600;}
+    .link { color:#1976d2; text-decoration:none;}
+    .link:hover { text-decoration:underline;}
+    .pagination { display:flex; justify-content:center; gap:6px; margin:16px 0;}
+    .page-btn { padding:5px 11px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px;}
+    .page-btn.active { background:#ffc107; border-color:#ffc107;}
+    .footer { margin-top:32px; padding:16px; border-top:1px solid #eee; text-align:center; color:#666; font-size:.95em;}
+    .disclaimer { margin-top:6px; color:#999; font-style:italic;}
+    @media (max-width: 800px) {
+      .container { padding:8px;}
+      .controls { flex-direction:column; align-items:stretch;}
+      table { font-size:.97em; }
+      th,td { padding:7px 4px;}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1>Yellow Book: Global Agent Compendium 2025</h1>
+      <div class="subtitle">Directory of software agents, agent-to-agent protocols, and research</div>
+      <div class="timestamp">Last updated: 2025-06-04T17:00:00+05:30</div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('agents')">Agents</button>
+      <button class="tab" onclick="switchTab('protocols')">Protocols</button>
+      <button class="tab" onclick="switchTab('research')">Whitepapers & Research</button>
+    </div>
+    <!-- AGENTS TAB -->
+    <div id="agents" class="tab-content active">
+      <div class="controls">
+        <input type="text" class="search-box" id="agents-search" placeholder="Search agents..." onkeyup="renderAgents()">
+        <select id="agents-industry-filter" onchange="renderAgents()">
+          <option value="">All Industries</option>
+          <option>AI Platform</option><option>Productivity</option><option>Healthcare</option>
+          <option>Finance</option><option>DevOps</option><option>Sales</option>
+          <option>Customer Service</option><option>Marketing</option>
+          <option>Creative</option><option>Education</option>
+        </select>
+        <select id="agents-status-filter" onchange="renderAgents()">
+          <option value="">All Status</option>
+          <option value="GA">GA</option>
+          <option value="Beta">Beta</option>
+          <option value="Open Source">Open Source</option>
+          <option value="Research">Research</option>
+        </select>
+        <button class="btn" onclick="downloadCSV('agents')">Download CSV</button>
+        <button class="btn btn-secondary" onclick="copyTable('agents')">Copy to Clipboard</button>
+      </div>
+      <table id="agents-table">
+        <thead>
+          <tr>
+            <th onclick="sortAgents(0)">Agent Name</th>
+            <th onclick="sortAgents(1)">Provider</th>
+            <th onclick="sortAgents(2)">Industry</th>
+            <th onclick="sortAgents(3)">Status</th>
+            <th onclick="sortAgents(4)">Primary Function</th>
+            <th>Deep Link</th>
+          </tr>
+        </thead>
+        <tbody id="agents-tbody"></tbody>
+      </table>
+      <div class="pagination" id="agents-pagination"></div>
+    </div>
+    <!-- PROTOCOLS TAB -->
+    <div id="protocols" class="tab-content">
+      <div class="controls">
+        <input type="text" class="search-box" id="protocols-search" placeholder="Search protocols..." onkeyup="renderProtocols()">
+        <select id="protocols-maturity-filter" onchange="renderProtocols()">
+          <option value="">All Maturity</option>
+          <option>Adopted</option><option>v1</option><option>Draft</option>
+        </select>
+        <button class="btn" onclick="downloadCSV('protocols')">Download CSV</button>
+        <button class="btn btn-secondary" onclick="copyTable('protocols')">Copy to Clipboard</button>
+      </div>
+      <table id="protocols-table">
+        <thead>
+          <tr>
+            <th onclick="sortProtocols(0)">Protocol Name</th>
+            <th onclick="sortProtocols(1)">Organizer</th>
+            <th onclick="sortProtocols(2)">Purpose</th>
+            <th onclick="sortProtocols(3)">Maturity</th>
+            <th>Deep Link</th>
+            <th>Reference Implementation</th>
+          </tr>
+        </thead>
+        <tbody id="protocols-tbody"></tbody>
+      </table>
+      <div class="pagination" id="protocols-pagination"></div>
+    </div>
+    <!-- RESEARCH TAB -->
+    <div id="research" class="tab-content">
+      <div class="controls">
+        <input type="text" class="search-box" id="research-search" placeholder="Search papers..." onkeyup="renderResearch()">
+        <select id="research-classification-filter" onchange="renderResearch()">
+          <option value="">All Classifications</option>
+          <option>Agents</option><option>Multi-Agent Comms</option><option>General Gen AI</option>
+        </select>
+        <button class="btn" onclick="downloadCSV('research')">Download CSV</button>
+        <button class="btn btn-secondary" onclick="copyTable('research')">Copy to Clipboard</button>
+      </div>
+      <table id="research-table">
+        <thead>
+          <tr>
+            <th onclick="sortResearch(0)">Title</th>
+            <th onclick="sortResearch(1)">Authors</th>
+            <th onclick="sortResearch(2)">Venue</th>
+            <th onclick="sortResearch(3)">Year</th>
+            <th onclick="sortResearch(4)">Abstract</th>
+            <th onclick="sortResearch(5)">Classification</th>
+            <th>Deep Link</th>
+          </tr>
+        </thead>
+        <tbody id="research-tbody"></tbody>
+      </table>
+      <div class="pagination" id="research-pagination"></div>
+    </div>
+  </div>
+  <footer class="footer">
+    <div><strong>Yellow Book: Global Agent Compendium 2025</strong> - Licensed under GPL-v3</div>
+    <div class="disclaimer">All trademarks belong to their respective owners. Content aggregated for educational purposes.</div>
+  </footer>
+  <script>
+    // --- DATA ---
+    const agents = [
+      {name:"OpenAI Assistants",provider:"OpenAI",industry:"AI Platform",status:"GA",function:"Build AI assistants with custom instructions and tools",link:"https://platform.openai.com/docs/assistants/overview"},
+      {name:"Microsoft Copilot Studio",provider:"Microsoft",industry:"Productivity",status:"GA",function:"No-code platform for building custom copilots and agents",link:"https://www.microsoft.com/en-us/microsoft-copilot/blog/copilot-studio/"},
+      {name:"Google Vertex AI Agents",provider:"Google Cloud",industry:"AI Platform",status:"GA",function:"Build, deploy, and scale AI agents on Google Cloud",link:"https://cloud.google.com/discover/what-are-ai-agents"},
+      {name:"Anthropic Claude Agents",provider:"Anthropic",industry:"AI Platform",status:"GA",function:"Multi-agent orchestrator for LLM-powered workflows",link:"https://awslabs.github.io/multi-agent-orchestrator/agents/built-in/anthropic-agent/"},
+      {name:"Bennie Health AI",provider:"Bennie Health",industry:"Healthcare",status:"GA",function:"AI agent for health benefits platform decision-making",link:"#"},
+      {name:"Freenome Diagnostic AI",provider:"Freenome",industry:"Healthcare",status:"GA",function:"Early-stage cancer detection agent",link:"#"},
+      {name:"Orby Digital Brain",provider:"Orby",industry:"Healthcare",status:"Beta",function:"Neurotechnology agent for motor skill rehabilitation",link:"#"},
+      {name:"Bayer Radiology AI",provider:"Bayer",industry:"Healthcare",status:"GA",function:"Agent assisting radiologists with data analysis and documentation",link:"#"},
+      {name:"CytoReason Digital Twins",provider:"CytoReason",industry:"Healthcare",status:"GA",function:"Computational disease models for drug development",link:"#"},
+      {name:"Financial Portfolio Agent",provider:"Various Firms",industry:"Finance",status:"Beta",function:"Autonomous portfolio monitoring and optimization",link:"https://www.moodys.com/web/en/us/creditview/blog/agentic-ai-in-financial-services.html"},
+      {name:"Banking Process Agent",provider:"Multiple Banks",industry:"Finance",status:"GA",function:"Automate account opening, fraud detection, and customer service",link:"https://www.pipefy.com/blog/ai-agents-for-banks/"},
+      {name:"DevOps AI Agent",provider:"MyKubert",industry:"DevOps",status:"Beta",function:"On-demand deterministic agents for infrastructure automation",link:"https://mykubert.com/blog/devops-handbook-with-ai-agents/"},
+      {name:"Relevance AI Sales Rep",provider:"Relevance AI",industry:"Sales",status:"GA",function:"AI sales agent for prospecting, qualification, and follow-up",link:"https://relevanceai.com/function/sales"},
+      {name:"Jarvis Project Agent",provider:"Life in Codes",industry:"Productivity",status:"GA",function:"AI-powered project management with Rovo Agent integration",link:"https://marketplace.atlassian.com/apps/1236378/jarvis"},
+      {name:"Voyager Minecraft Agent",provider:"MineDojo Research",industry:"Creative",status:"Research",function:"LLM-powered embodied lifelong learning agent",link:"https://voyager.minedojo.org"},
+      {name:"TheLibrarian.io",provider:"AI Agents Directory",industry:"Productivity",status:"GA",function:"WhatsApp AI Personal Assistant",link:"https://aiagentsdirectory.com/agent/thelibrarianio"},
+      {name:"Manus AI",provider:"AI Agents Directory",industry:"AI Platform",status:"GA",function:"World's First Universal Agent",link:"https://aiagentsdirectory.com/agent/manus-ai"},
+      {name:"Nextvestment",provider:"AI Agents Directory",industry:"Finance",status:"GA",function:"Investment Simplification",link:"https://aiagentsdirectory.com/agent/nextvestment"},
+      {name:"CrewAI",provider:"AI Agents Directory",industry:"AI Platform",status:"GA",function:"Multi-Agent System for Complex Tasks",link:"https://aiagentsdirectory.com/agent/crewai"},
+      {name:"AutoGPT",provider:"AI Agents Directory",industry:"AI Platform",status:"Open Source",function:"Autonomous Task Execution",link:"https://aiagentsdirectory.com/agent/autogpt"},
+      {name:"SuperAgent",provider:"SuperAgent",industry:"AI Platform",status:"Open Source",function:"Open-source framework for LLM agents",link:"https://superagent.sh/"},
+      {name:"Devin AI",provider:"Cognition AI",industry:"DevOps",status:"GA",function:"Autonomous AI software engineer",link:"https://www.cognition-labs.com/devin"},
+      {name:"Rasa Pro",provider:"Rasa",industry:"Customer Service",status:"GA",function:"Conversational AI for enterprise support",link:"https://rasa.com/"},
+      {name:"Chatbot.com Agent",provider:"Chatbot.com",industry:"Customer Service",status:"GA",function:"No-code chatbot builder for sales/support",link:"https://www.chatbot.com/"},
+      {name:"Ada Support Agent",provider:"Ada",industry:"Customer Service",status:"GA",function:"Automated customer service AI agent",link:"https://ada.cx/"},
+      {name:"Jasper AI",provider:"Jasper",industry:"Marketing",status:"GA",function:"AI content generation and marketing agent",link:"https://www.jasper.ai/"},
+      {name:"Copy.ai Agent",provider:"Copy.ai",industry:"Marketing",status:"GA",function:"AI-powered copywriting assistant",link:"https://www.copy.ai/"},
+      {name:"GrammarlyGO",provider:"Grammarly",industry:"Productivity",status:"GA",function:"AI writing assistant with generative capabilities",link:"https://www.grammarly.com/go"},
+      {name:"Notion AI",provider:"Notion",industry:"Productivity",status:"GA",function:"AI-powered workspace productivity agent",link:"https://www.notion.so/product/ai"},
+      {name:"GitHub Copilot",provider:"GitHub",industry:"DevOps",status:"GA",function:"AI pair programmer for code completion",link:"https://github.com/features/copilot"},
+      {name:"Tabnine",provider:"Tabnine",industry:"DevOps",status:"GA",function:"AI code completion agent",link:"https://www.tabnine.com/"},
+    ];
+    const protocols = [
+      {name:"Model Context Protocol (MCP)",organizer:"Anthropic",purpose:"Standardize AI model context integration",core:"JSON-RPC 2.0 client-server",maturity:"Adopted",link:"https://modelcontextprotocol.io/introduction",ref:"https://github.com/modelcontextprotocol"},
+      {name:"ReAct Framework",organizer:"Google Research",purpose:"Combine reasoning and acting in LLMs",core:"Think-Act-Observe cycles",maturity:"Adopted",link:"https://www.promptingguide.ai/techniques/react",ref:"https://www.labellerr.com/blog/react-agents-what-they-are-how-to-build-your-own/"},
+      {name:"OpenAI Function Calling",organizer:"OpenAI",purpose:"Enable LLMs to call external functions",core:"Structured JSON output",maturity:"Adopted",link:"https://platform.openai.com/docs/assistants/tools",ref:"https://mirascope.com/blog/openai-function-calling"},
+      {name:"AutoGen",organizer:"Microsoft",purpose:"Multi-agent conversation framework",core:"Event-driven distributed",maturity:"v1",link:"https://devblogs.microsoft.com/autogen/",ref:"https://github.com/microsoft/autogen"},
+      {name:"LangGraph",organizer:"LangChain",purpose:"Build stateful multi-agent workflows",core:"Graph-based state machines",maturity:"v1",link:"https://blog.langchain.dev/langgraph-multi-agent-workflows/",ref:"https://langchain-ai.github.io/langgraph/agents/multi-agent/"},
+      {name:"CAMEL",organizer:"CAMEL-AI",purpose:"Role-playing multi-agent framework",core:"Communicative agent interactions",maturity:"v1",link:"https://wandb.ai/vincenttu/blog_posts/reports/Exploring-2-Multi-Agent-LLM-Libraries-Camel-Langroid--Vmlldzo1MzAyODM5",ref:"https://github.com/camel-ai/camel"},
+      {name:"Langroid",organizer:"Langroid Team",purpose:"Lightweight multi-agent LLM applications",core:"Task-based agent communication",maturity:"v1",link:"https://wandb.ai/vincenttu/blog_posts/reports/Exploring-2-Multi-Agent-LLM-Libraries-Camel-Langroid--Vmlldzo1MzAyODM5",ref:"#"},
+      {name:"Semantic Kernel Process Framework",organizer:"Microsoft",purpose:"Embed AI into business workflows",core:"Stateful, long-running processes",maturity:"v1",link:"https://devblogs.microsoft.com/autogen/microsofts-agentic-frameworks-autogen-and-semantic-kernel/",ref:"#"},
+      {name:"Multi-Agent Orchestrator",organizer:"AWS Labs",purpose:"Route conversations between specialized agents",core:"Intent classification and agent selection",maturity:"v1",link:"https://awslabs.github.io/multi-agent-orchestrator/",ref:"https://github.com/awslabs/multi-agent-orchestrator"},
+      {name:"LangGraph Supervisor",organizer:"LangChain",purpose:"Centralized multi-agent coordination",core:"Supervisor controls task delegation",maturity:"v1",link:"https://langchain-ai.github.io/langgraph/agents/multi-agent/",ref:"https://github.com/langchain-ai/langgraph-supervisor-py"},
+      {name:"LangGraph Swarm",organizer:"LangChain",purpose:"Dynamic agent handoff system",core:"Peer-to-peer agent communication",maturity:"v1",link:"https://langchain-ai.github.io/langgraph/agents/multi-agent/",ref:"https://github.com/langchain-ai/langgraph-swarm-py"},
+      {name:"Magentic-One",organizer:"Microsoft",purpose:"Generalist multi-agent system for web and file tasks",core:"Coordinated specialized agents",maturity:"Draft",link:"https://juteq.ca/biggest-ai-agent-paper-releases-2024/",ref:"#"},
+      {name:"Voyager Protocol",organizer:"MineDojo",purpose:"Embodied agent learning in Minecraft",core:"LLM-driven task and tool selection",maturity:"Research",link:"https://voyager.minedojo.org",ref:"https://github.com/MineDojo/voyager"},
+      {name:"Semantic Router",organizer:"LangChain",purpose:"Semantic message routing between agents",core:"Intent-based message passing",maturity:"v1",link:"https://blog.langchain.dev/semantic-router/",ref:"https://github.com/langchain-ai/semantic-router"},
+    ];
+    const research = [
+      {title:"The Landscape of Emerging AI Agent Architectures",authors:"Various",venue:"arXiv",year:"2024",abstract:"Survey of AI agent implementations focusing on reasoning, planning, and tool execution capabilities",classif:"Agents",link:"https://arxiv.org/abs/2404.11584"},
+      {title:"Multi-Agent Coordination across Diverse Applications",authors:"Sun, Yang, Duan, et al.",venue:"arXiv",year:"2025",abstract:"Comprehensive survey of multi-agent coordination mechanisms across various application domains",classif:"Multi-Agent Comms",link:"https://arxiv.org/abs/2502.14743"},
+      {title:"AI Agents: Evolution, Architecture, and Real-World Applications",authors:"Various",venue:"arXiv",year:"2024",abstract:"Comprehensive analysis of AI agents examining theoretical foundations and architectural components",classif:"Agents",link:"https://arxiv.org/html/2503.12687v1"},
+      {title:"Evaluating The Architecture Of Large Language Model-Based Agents",authors:"Lu, Zhao, Liu, et al.",venue:"SSRN",year:"2024",abstract:"AgentArcEval method for evaluating FM-based agent architecture complexities and evaluation needs",classif:"Agents",link:"https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5017297"},
+      {title:"ReAct: Synergizing Reasoning and Acting in Language Models",authors:"Yao et al.",venue:"Research Paper",year:"2022",abstract:"Framework combining reasoning traces and actions for improved LLM task performance",classif:"Agents",link:"https://www.promptingguide.ai/techniques/react"},
+      {title:"Voyager: An Open-Ended Embodied Agent with LLMs",authors:"MineDojo Research",venue:"Research",year:"2023",abstract:"First LLM-powered embodied lifelong learning agent with automatic curriculum and skill library",classif:"Agents",link:"https://voyager.minedojo.org"},
+      {title:"LLM Agents: The Ultimate Guide 2025",authors:"SuperAnnotate",venue:"Technical Blog",year:"2024",abstract:"Comprehensive guide to LLM agents covering planning, memory, tools for complex language tasks",classif:"Agents",link:"https://www.superannotate.com/blog/llm-agents"},
+      {title:"Complete Guide to LLM Agents (2025)",authors:"Botpress",venue:"Technical Blog",year:"2025",abstract:"AI-powered tools using large language models for language interpretation and task performance",classif:"Agents",link:"https://botpress.com/blog/llm-agents"},
+      {title:"Top LLMs for AI Agents in 2025",authors:"Tune AI",venue:"Technical Blog",year:"2025",abstract:"Analysis of leading open-source and closed-source LLMs for agent development applications",classif:"General Gen AI",link:"https://tunehq.ai/blog/top-llms-for-ai-agents"},
+      {title:"AI Agents in 2025: Expectations vs. Reality",authors:"IBM Think",venue:"IBM Research",year:"2025",abstract:"Analysis of AI agent capabilities, limitations and realistic expectations for 2025 deployment",classif:"Agents",link:"https://www.ibm.com/think/insights/ai-agents-2025-expectations-vs-reality"},
+      {title:"What Are AI Agents?",authors:"IBM",venue:"IBM Documentation",year:"2024",abstract:"Foundational overview of AI agents covering autonomous task execution and tool utilization",classif:"Agents",link:"https://www.ibm.com/think/topics/ai-agents"},
+      {title:"Introducing Agent Flows: Transforming Automation",authors:"Microsoft",venue:"Microsoft Blog",year:"2025",abstract:"Agent flows for structured automation with AI-driven intelligence in Microsoft Copilot Studio",classif:"Agents",link:"https://www.microsoft.com/en-us/microsoft-copilot/blog/copilot-studio/"},
+      {title:"Advanced Large Language Model Agents MOOC",authors:"UC Berkeley",venue:"Course",year:"2024",abstract:"Comprehensive course covering LLM agent fundamentals, reasoning, planning, and tool use",classif:"Agents",link:"https://llmagents-learning.org/f24"},
+      {title:"AI Agents for Healthcare: Benefits & Use Cases",authors:"Oracle",venue:"Oracle Health",year:"2025",abstract:"Healthcare-specific AI agents for clinical decision-making and administrative burden reduction",classif:"Agents",link:"https://www.oracle.com/health/clinical-suite/ai-agents-healthcare/"},
+      {title:"AI in Healthcare 2024 - Patient Care with Intelligent Agents",authors:"Rapid Innovation",venue:"Technical Blog",year:"2024",abstract:"Predictive analytics and personalized medicine applications using AI agents in healthcare",classif:"Agents",link:"https://www.rapidinnovation.io/post/ai-agents-for-patient-care-use-cases-benefits-challenges"}
+    ];
+    // --- STATE ---
+    let agentsSortCol=0,agentsSortDir=1,agentsPage=1;
+    let protocolsSortCol=0,protocolsSortDir=1,protocolsPage=1;
+    let researchSortCol=0,researchSortDir=1,researchPage=1;
+    const pageSize=20;
+    // --- UTILS ---
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+      document.querySelector(`.tab[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+      if(tab==='agents') renderAgents();
+      if(tab==='protocols') renderProtocols();
+      if(tab==='research') renderResearch();
+    }
+    // --- AGENTS ---
+    function renderAgents() {
+      const search = document.getElementById('agents-search').value.toLowerCase();
+      const industry = document.getElementById('agents-industry-filter').value;
+      const status = document.getElementById('agents-status-filter').value;
+      let filtered = agents.filter(a =>
+        (!search || Object.values(a).some(v=>String(v).toLowerCase().includes(search))) &&
+        (!industry || a.industry===industry) &&
+        (!status || a.status===status)
+      );
+      filtered = filtered.sort((a,b)=>{
+        let av = Object.values(a)[agentsSortCol], bv = Object.values(b)[agentsSortCol];
+        if(typeof av==="string"&&typeof bv==="string") return agentsSortDir*av.localeCompare(bv);
+        return agentsSortDir*(av-bv);
+      });
+      const tbody = document.getElementById('agents-tbody');
+      tbody.innerHTML = "";
+      const start = (agentsPage-1)*pageSize, end = start+pageSize;
+      filtered.slice(start,end).forEach(a=>{
+        tbody.innerHTML += `<tr>
+          <td>${a.name}</td>
+          <td>${a.provider}</td>
+          <td>${a.industry}</td>
+          <td class="status-${a.status.replace(/ /g,'').toLowerCase()}">${a.status}</td>
+          <td>${a.function}</td>
+          <td><a class="link" href="${a.link}" target="_blank">Link</a></td>
+        </tr>`;
+      });
+      // Pagination
+      const totalPages = Math.ceil(filtered.length/pageSize)||1;
+      const pagDiv = document.getElementById('agents-pagination');
+      pagDiv.innerHTML = "";
+      for(let i=1;i<=totalPages;i++) {
+        pagDiv.innerHTML += `<button class="page-btn${i===agentsPage?' active':''}" onclick="agentsPage=${i};renderAgents()">${i}</button>`;
+      }
+    }
+    function sortAgents(col) {
+      if(agentsSortCol===col) agentsSortDir*=-1; else { agentsSortCol=col; agentsSortDir=1; }
+      renderAgents();
+    }
+    // --- PROTOCOLS ---
+    function renderProtocols() {
+      const search = document.getElementById('protocols-search').value.toLowerCase();
+      const maturity = document.getElementById('protocols-maturity-filter').value;
+      let filtered = protocols.filter(p =>
+        (!search || Object.values(p).some(v=>String(v).toLowerCase().includes(search))) &&
+        (!maturity || p.maturity===maturity)
+      );
+      filtered = filtered.sort((a,b)=>{
+        let av = Object.values(a)[protocolsSortCol], bv = Object.values(b)[protocolsSortCol];
+        if(typeof av==="string"&&typeof bv==="string") return protocolsSortDir*av.localeCompare(bv);
+        return protocolsSortDir*(av-bv);
+      });
+      const tbody = document.getElementById('protocols-tbody');
+      tbody.innerHTML = "";
+      const start = (protocolsPage-1)*pageSize, end = start+pageSize;
+      filtered.slice(start,end).forEach(p=>{
+        tbody.innerHTML += `<tr>
+          <td>${p.name}</td>
+          <td>${p.organizer}</td>
+          <td>${p.purpose}</td>
+          <td>${p.maturity}</td>
+          <td><a class="link" href="${p.link}" target="_blank">Spec</a></td>
+          <td><a class="link" href="${p.ref}" target="_blank">Ref</a></td>
+        </tr>`;
+      });
+      // Pagination
+      const totalPages = Math.ceil(filtered.length/pageSize)||1;
+      const pagDiv = document.getElementById('protocols-pagination');
+      pagDiv.innerHTML = "";
+      for(let i=1;i<=totalPages;i++) {
+        pagDiv.innerHTML += `<button class="page-btn${i===protocolsPage?' active':''}" onclick="protocolsPage=${i};renderProtocols()">${i}</button>`;
+      }
+    }
+    function sortProtocols(col) {
+      if(protocolsSortCol===col) protocolsSortDir*=-1; else { protocolsSortCol=col; protocolsSortDir=1; }
+      renderProtocols();
+    }
+    // --- RESEARCH ---
+    function renderResearch() {
+      const search = document.getElementById('research-search').value.toLowerCase();
+      const classif = document.getElementById('research-classification-filter').value;
+      let filtered = research.filter(r =>
+        (!search || Object.values(r).some(v=>String(v).toLowerCase().includes(search))) &&
+        (!classif || r.classif===classif)
+      );
+      filtered = filtered.sort((a,b)=>{
+        let av = Object.values(a)[researchSortCol], bv = Object.values(b)[researchSortCol];
+        if(typeof av==="string"&&typeof bv==="string") return researchSortDir*av.localeCompare(bv);
+        return researchSortDir*(av-bv);
+      });
+      const tbody = document.getElementById('research-tbody');
+      tbody.innerHTML = "";
+      const start = (researchPage-1)*pageSize, end = start+pageSize;
+      filtered.slice(start,end).forEach(r=>{
+        tbody.innerHTML += `<tr>
+          <td>${r.title}</td>
+          <td>${r.authors}</td>
+          <td>${r.venue}</td>
+          <td>${r.year}</td>
+          <td>${r.abstract}</td>
+          <td>${r.classif}</td>
+          <td><a class="link" href="${r.link}" target="_blank">Link</a></td>
+        </tr>`;
+      });
+      // Pagination
+      const totalPages = Math.ceil(filtered.length/pageSize)||1;
+      const pagDiv = document.getElementById('research-pagination');
+      pagDiv.innerHTML = "";
+      for(let i=1;i<=totalPages;i++) {
+        pagDiv.innerHTML += `<button class="page-btn${i===researchPage?' active':''}" onclick="researchPage=${i};renderResearch()">${i}</button>`;
+      }
+    }
+    function sortResearch(col) {
+      if(researchSortCol===col) researchSortDir*=-1; else { researchSortCol=col; researchSortDir=1; }
+      renderResearch();
+    }
+    // --- CSV/CLIPBOARD ---
+    function downloadCSV(tab) {
+      let rows = [];
+      if(tab==='agents') {
+        rows.push(["Agent Name","Provider","Industry","Status","Primary Function","Deep Link"]);
+        agents.forEach(a=>rows.push([a.name,a.provider,a.industry,a.status,a.function,a.link]));
+      }
+      if(tab==='protocols') {
+        rows.push(["Protocol Name","Organizer","Purpose","Maturity","Deep Link","Reference Implementation"]);
+        protocols.forEach(p=>rows.push([p.name,p.organizer,p.purpose,p.maturity,p.link,p.ref]));
+      }
+      if(tab==='research') {
+        rows.push(["Title","Authors","Venue","Year","Abstract","Classification","Deep Link"]);
+        research.forEach(r=>rows.push([r.title,r.authors,r.venue,r.year,r.abstract,r.classif,r.link]));
+      }
+      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv],{type:"text/csv"});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `yellow-book-${tab}.csv`;
+      a.click();
+    }
+    function copyTable(tab) {
+      let text = "";
+      if(tab==='agents') {
+        text += "Agent Name\tProvider\tIndustry\tStatus\tPrimary Function\tDeep Link\n";
+        agents.forEach(a=>text+=`${a.name}\t${a.provider}\t${a.industry}\t${a.status}\t${a.function}\t${a.link}\n`);
+      }
+      if(tab==='protocols') {
+        text += "Protocol Name\tOrganizer\tPurpose\tMaturity\tDeep Link\tReference Implementation\n";
+        protocols.forEach(p=>text+=`${p.name}\t${p.organizer}\t${p.purpose}\t${p.maturity}\t${p.link}\t${p.ref}\n`);
+      }
+      if(tab==='research') {
+        text += "Title\tAuthors\tVenue\tYear\tAbstract\tClassification\tDeep Link\n";
+        research.forEach(r=>text+=`${r.title}\t${r.authors}\t${r.venue}\t${r.year}\t${r.abstract}\t${r.classif}\t${r.link}\n`);
+      }
+      navigator.clipboard.writeText(text);
+    }
+    // --- INIT ---
+    renderAgents(); renderProtocols(); renderResearch();
+  </script>
+</body>
+</html>
